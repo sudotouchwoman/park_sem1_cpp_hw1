@@ -32,8 +32,8 @@ post_t* create_post(const char* title, const char* body, const char* post_date);
 post_t* copy_post(const post_t*);
 int delete_post(post_t*);
 
-int add_tag(const char*);
-int add_comment(const comment_t*);
-int add_vote(const vote_t*);
+int add_tag(post_t*, const char*);
+int add_comment(post_t*, const comment_t*);
+int add_vote(post_t*, const vote_t*);
 
 #endif // _POST_H

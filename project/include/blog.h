@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include "post.h"
 
-typedef struct blog_element{
+typedef struct post_collection{
     post_t** posts;
     size_t n_posts;
     size_t c_posts;
@@ -19,6 +19,6 @@ enum blog_errors{
 blog_t* create_blog();
 blog_t* copy_blog(const blog_t*);
 int delete_blog(blog_t*);
-int add_post(const post_t*);
+int add_post(blog_t*, const post_t*);
 
 #endif // _BLOG_H

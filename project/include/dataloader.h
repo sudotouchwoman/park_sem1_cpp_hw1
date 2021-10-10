@@ -15,5 +15,6 @@ enum input_errors{
 blog_t* make_blog(FILE*);
 post_t* make_post(FILE*);
 int make_offset(FILE*, size_t *years, size_t *months, size_t *days);
+int read_blog_from_file(FILE*);
 
 #endif // _LOADER_H
