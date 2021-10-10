@@ -16,9 +16,10 @@ set(LIB_NAME blog_lib)
 include_directories(${CMAKE_CURRENT_LIST_DIR}/${LIB_HEADERS})
 
 add_library(${LIB_NAME} STATIC
-    ${LIB_SOURCES}/compilation.c
-    ${LIB_SOURCES}/dataloader.c
+    ${LIB_SOURCES}/post.c
     ${LIB_SOURCES}/blog.c
+    ${LIB_SOURCES}/reactions.c
+    ${LIB_SOURCES}/dataloader.c
     ${LIB_SOURCES}/processing.c
 )
 
