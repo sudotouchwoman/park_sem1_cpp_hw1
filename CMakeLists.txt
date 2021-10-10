@@ -35,10 +35,11 @@ if(BUILD_TESTS)
     set(TEST_SOURCES tests)
 
     file(GLOB test_sources
-    ${TEST_SOURCES}/compilation.cpp
-    ${TEST_SOURCES}/dataloader.cpp
     ${TEST_SOURCES}/blog.cpp
+    ${TEST_SOURCES}/dataloader.cpp
+    ${TEST_SOURCES}/post.cpp
     ${TEST_SOURCES}/processing.cpp
+    ${TEST_SOURCES}/reactions.cpp
 )
 
     enable_testing()

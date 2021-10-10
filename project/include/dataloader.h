@@ -7,14 +7,17 @@
 #include "blog.h"
 #include "post.h"
 
+#define BUFFER_SIZE 256
+
 enum input_errors{
     OPEN_FILE_ERROR = 1,
-    EMPTY_PTR_ERROE
+    EMPTY_PTR_ERROR,
+    FORMAT_ERROR
 };
 
 blog_t* make_blog(FILE*);
 post_t* make_post(FILE*);
 int make_offset(FILE*, size_t *years, size_t *months, size_t *days);
-int read_blog_from_file(FILE*);
+void free_used_resources(FILE*, FILE*, blog_t*, blog_t*);
 
 #endif // _LOADER_H

@@ -72,7 +72,7 @@ int add_post(blog_t* where, const post_t* post_to_add){
     post_t* new_post = copy_post(post_to_add);
     if (new_post == NULL) return BLOG_APPEND_ERROR;
 
-    if (where->n_posts == where->n_posts){
+    if (where->n_posts == where->c_posts){
         if (resize_posts(where->posts, &where->c_posts) != 0){
             delete_post(new_post);
             return BLOG_APPEND_ERROR;
