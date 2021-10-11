@@ -1,30 +1,48 @@
 #include "dataloader.h"
 #include <string.h>
 
+static void flush_sscanf_buffer(FILE* fd){
+    // extract one symbol from file to flush scanf buffer
+    // needed to read symbols one by one
+    if (fd == NULL) return;
+    char buf = '\0';
+    fscanf(fd, "%c", &buf);
+    return;
+}
+
 blog_t* make_blog(FILE* fd_in){
     if (fd_in == NULL) return NULL;
-    size_t posts_total = 0;
+    fprintf(stdout, "Reads blog contents from specified file\n");
+    int posts_total = 0;
 
-    if (fscanf(fd_in, "%lu", &posts_total) != 1){
+    if (fscanf(fd_in, "%d", &posts_total) != 1){
         fprintf(stderr, "Invalid number of posts entered, stopping...\n");
         return NULL;
     }
+    if (posts_total <= 0){
+        fprintf(stderr, "Invalid number of posts entered, stopping...\n");
+        return NULL;
+    }
+    flush_sscanf_buffer(fd_in);
     blog_t* new_blog = create_blog();
     if (new_blog == NULL){
         fprintf(stderr, "Failed to allocate memory for the blog\n");
         return NULL;
     }
     for (size_t i = 0; i < posts_total; ++i){
+        fprintf(stderr, "Checkpoint: before make_post()\n");
         post_t* buf_post = make_post(fd_in);
         if (add_post(new_blog, buf_post) != 0){
             delete_post(buf_post);
             delete_blog(new_blog);
             return NULL;
         }
+        fprintf(stderr, "Checkpoint: before delete_post()\n");
         delete_post(buf_post);
+        fprintf(stderr, "Checkpoint: after delete_post()\n");
     }
     
-    fprintf(stdout, "Read blog data from file\n");
+    fprintf(stdout, "Succesfully read blog data from file\n");
     return new_blog;
 }
 
@@ -33,22 +51,15 @@ post_t* make_post(FILE* fd_in){
     char DATE_BUFFER[4+1+2+1+2+1];
     char TITLE_BUFFER[BUFFER_SIZE];
     char BODY_BUFFER[BUFFER_SIZE];
-    // char *getline_buffer_title;
-    // char *getline_buffer_date;
-    // char *getline_buffer_body;
+    char buffer_flusher = '\0';
     size_t buf_size = 0;
 
-    // if (getline(&getline_buffer_title, &buf_size, fd_in) == -1) return NULL;
-    // if (getline(&getline_buffer_date, &buf_size, fd_in) == -1) return NULL;
-    // if (getline(&getline_buffer_body, &buf_size, fd_in) == -1) return NULL;
-    
-    if (fgets(TITLE_BUFFER, BUFFER_SIZE, fd_in) == NULL) return NULL;
-    if (fgets(DATE_BUFFER, 4+1+2+1+2+1, fd_in) == NULL) return NULL;
-    if (fgets(BODY_BUFFER, BUFFER_SIZE, fd_in) == NULL) return NULL;
-
-    TITLE_BUFFER[strlen(TITLE_BUFFER) - 1] = '\0';
-    DATE_BUFFER[strlen(DATE_BUFFER) - 1] = '\0';
-    BODY_BUFFER[strlen(BODY_BUFFER) - 1] = '\0';
+    if (fscanf(fd_in, "%[^\n]s", TITLE_BUFFER) == 0) return NULL;
+    flush_sscanf_buffer(fd_in);
+    if (fscanf(fd_in, "%[^\n]s", DATE_BUFFER) == 0) return NULL;
+    flush_sscanf_buffer(fd_in);
+    if (fscanf(fd_in, "%[^\n]s", BODY_BUFFER) == 0) return NULL;
+    flush_sscanf_buffer(fd_in);
 
     // create new empty post
     post_t* new_post = create_post(TITLE_BUFFER, BODY_BUFFER, DATE_BUFFER);
@@ -63,13 +74,13 @@ post_t* make_post(FILE* fd_in){
         delete_post(new_post);
         return NULL;
     }
+    flush_sscanf_buffer(fd_in);
     for (size_t i = 0; i < n_tags; ++i){
-        // if (getline(&getline_buffer_body, &buf_size, fd_in) == -1){
-        if (fgets(BODY_BUFFER, BUFFER_SIZE, fd_in) == NULL){
+        if (fscanf(fd_in, "%[^\n]s", BODY_BUFFER) == 0){
             delete_post(new_post);
             return NULL;
         }
-        BODY_BUFFER[strlen(BODY_BUFFER) -1 ] = '\0';
+        flush_sscanf_buffer(fd_in);
         if (add_tag(new_post, BODY_BUFFER) != 0){
             delete_post(new_post);
             return NULL;
@@ -81,18 +92,18 @@ post_t* make_post(FILE* fd_in){
         delete_post(new_post);
         return NULL;
     }
+    flush_sscanf_buffer(fd_in);
     for (size_t i = 0; i < n_comments; ++i){
-        // if (getline(&getline_buffer_body, &buf_size, fd_in) == -1){
-        if (fgets(BODY_BUFFER, BUFFER_SIZE, fd_in) == NULL){
+        if (fscanf(fd_in, "%[^\n]s", DATE_BUFFER) == 0){
             delete_post(new_post);
             return NULL;
         }
-        BODY_BUFFER[strlen(BODY_BUFFER) -1 ] = '\0';
-        if (fgets(BODY_BUFFER, BUFFER_SIZE, fd_in) == NULL){
-        // if (getline(&getline_buffer_date, &buf_size, fd_in) == -1){
+        flush_sscanf_buffer(fd_in);
+        if (fscanf(fd_in, "%[^\n]s", BODY_BUFFER) == 0){
             delete_post(new_post);
             return NULL;
         }
+        flush_sscanf_buffer(fd_in);
         comment_t* buf_comment = create_comment(DATE_BUFFER, BODY_BUFFER);
         if (add_comment(new_post, buf_comment) != 0){
             delete_comment(buf_comment);
@@ -107,13 +118,13 @@ post_t* make_post(FILE* fd_in){
         delete_post(new_post);
         return NULL;
     }
+    flush_sscanf_buffer(fd_in);
     for (size_t i = 0; i < n_votes; ++i){
-        if (fgets(DATE_BUFFER, 4+1+2+1+2+1, fd_in) == NULL){
-        // if (getline(&getline_buffer_date, &buf_size, fd_in) == -1){
+        if (fscanf(fd_in, "%[^\n]s", DATE_BUFFER) == 0){
             delete_post(new_post);
             return NULL;
         }
-        DATE_BUFFER[strlen(DATE_BUFFER) -1 ] = '\0';
+        flush_sscanf_buffer(fd_in);
         vote_t* buf_vote = create_vote(DATE_BUFFER);
         if (add_vote(new_post, buf_vote) != 0){
             delete_vote(buf_vote);
@@ -126,14 +137,14 @@ post_t* make_post(FILE* fd_in){
     return new_post;
 }
 
-int make_offset(FILE* fd_in, size_t *years, size_t *months, size_t *days){
+int make_time_period(FILE* fd_in, size_t *years, size_t *months, size_t *days){
     if (fd_in == NULL) return OPEN_FILE_ERROR;
     if (years == NULL) return EMPTY_PTR_ERROR;
     if (months == NULL) return EMPTY_PTR_ERROR;
     if (days == NULL) return EMPTY_PTR_ERROR;
 
-    fprintf(stdout, "Enter time delta for search. Format is YYYY-MM-DD:");
-    if (fscanf(fd_in, "%lu-%lu-%lu", years, months, days) != 3){
+    fprintf(stdout, "Enter time delta for search. Format is YYYY-MM-DD:\n");
+    if (fscanf(fd_in, "%lu;%lu;%lu;", years, months, days) != 3){
         fprintf(stdout, "Entered data is of invalid format, stopping work...\n");
         return FORMAT_ERROR;
     }

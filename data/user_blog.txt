@@ -1,17 +1,34 @@
-1
-title title
-2021-09-02
-body body body body body body
 2
-#a
-#f
+welcome post
+2021-09-02
+users of out site are disappointed about this c programm
+3
+#c
+#c++
+#technopark
 3
 2021-09-04
-comment comment comment
+how tf this multi-line fscanf works?
 2021-10-05
-comment comment comment comment comment
+idk lol
 2021-10-10
-comment
+i used terminating \n
 2
 2021-09-04
 2021-09-05
+post to test code on two posts
+2021-09-02
+body of the second post
+3
+#test
+#coverage
+#pipelinepassed
+3
+2021-09-04
+did u pass pipeline?
+2021-10-05
+idk not yet
+2021-10-10
+last third comment to make sure everything works
+1
+2021-09-04

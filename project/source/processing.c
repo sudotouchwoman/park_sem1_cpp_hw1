@@ -17,8 +17,10 @@ int lies_in_offset(const char* reference, const char* date_to_check, size_t year
     sscanf(reference, "%lu-%lu-%lu", &zero_year, &zero_month, &zero_day);
     sscanf(date_to_check, "%lu-%lu-%lu", &target_year, &target_month, &target_day);
 
-    if ( ((target_day - zero_day) < days) && ((target_month - zero_month) < months) && ((target_year - zero_year) < years) ) return 1;
-    return 0;
+    size_t target_timedelta = (target_day - zero_day) + 30 * (target_month - zero_month) + 365 * (target_year - zero_year);
+    size_t timedelta_in_days = days + 30 * months + 365 * years;
+
+    return target_timedelta < timedelta_in_days;
 }
 
 size_t find_reaction_of_post(const post_t* post_to_check, size_t time_period[3]){
@@ -74,7 +76,7 @@ blog_t* select_most_hyped(blog_t* target_blog, size_t time_period[3]){
     if (most_hyped == NULL) return NULL;
 
     for (size_t i = 0; i < target_blog->n_posts; ++i){
-        if (!(target_blog->posts[i]->n_comments + target_blog->posts[i]->n_votes == max_reaction)) continue;
+        if (find_reaction_of_post(target_blog->posts[i], time_period) < max_reaction) continue;
         if (add_post(most_hyped, target_blog->posts[i]) != 0){
             delete_blog(most_hyped);
             return NULL;
@@ -82,4 +84,45 @@ blog_t* select_most_hyped(blog_t* target_blog, size_t time_period[3]){
     }
 
     return most_hyped;
+}
+
+int print_most_hyped(FILE* fd_out, const blog_t* blog_to_print){
+    if (fd_out == NULL) return 1;
+    if (blog_to_print == NULL) return 1;
+    for (size_t i = 0; i < blog_to_print->n_posts; ++i) print_post_contents(fd_out, blog_to_print->posts[i]);
+    return 0;
+}
+
+int print_post_contents(FILE* fd_out, const post_t* post_to_print){
+    if (fd_out == NULL) return 1;
+    if (post_to_print == NULL) return 1;
+    // if (post_to_print->title == NULL) return POST_NULL_ERROR;
+    // if (post_to_print->post_date == NULL) return POST_NULL_ERROR;
+    // if (post_to_print->body == NULL) return POST_NULL_ERROR;
+    // if (post_to_print->c_tags == 0) return POST_NULL_ERROR;
+    // if (post_to_print->c_comments == 0) return POST_NULL_ERROR;
+    // if (post_to_print->c_votes == 0) return POST_NULL_ERROR;
+
+    fprintf(fd_out, "Post contents:\n");
+    fprintf(fd_out, "%s (created on %s)\n", post_to_print->title, post_to_print->post_date);
+    fprintf(fd_out, "%s", post_to_print->body);
+    fprintf(fd_out, "\nTags: ");
+    for (size_t i = 0; i < post_to_print->n_tags; ++i) fprintf(fd_out, "%s ", post_to_print->tags[i]);
+    fprintf(fd_out, "\nComments:\n");
+    for (size_t i = 0; i < post_to_print->n_comments; ++i)
+        fprintf(
+            fd_out,
+            "%s (on %s)\n",
+            post_to_print->comments[i]->text_comment,
+            post_to_print->comments[i]->date_comment
+            );
+    fprintf(fd_out, "Votes:\n"); 
+    for (size_t i = 0; i < post_to_print->n_votes; ++i)
+        fprintf(
+            fd_out,
+            "%s\n",
+            post_to_print->votes[i]->date_vote
+            );
+    fprintf(fd_out, "End of post\n");
+    return 0;
 }
