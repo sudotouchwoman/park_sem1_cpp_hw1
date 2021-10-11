@@ -18,6 +18,8 @@ blog_t* copy_blog(const blog_t* reference){
     blog_t* blog_copy = (blog_t*)malloc(sizeof(blog_t));
     if (blog_copy == NULL) return NULL;
     blog_copy->posts = NULL;
+    blog_copy->n_posts = 0;
+    blog_copy->c_posts = 0;
 
     if (reference->posts != NULL && reference->n_posts > 0){
         for (size_t i = 0; i < reference->n_posts; ++i){
@@ -26,13 +28,6 @@ blog_t* copy_blog(const blog_t* reference){
                 return NULL;
             }
         }
-        // blog_copy->n_posts = reference->n_posts;
-        // blog_copy->c_posts = reference->c_posts;
-    }
-    else{
-        blog_copy->n_posts = 0;
-        blog_copy->c_posts = 0;
-        blog_copy->posts = NULL;
     }
     return blog_copy;
 }

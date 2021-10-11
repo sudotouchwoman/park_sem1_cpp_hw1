@@ -70,8 +70,6 @@ post_t* copy_post(const post_t* reference){
                 return NULL;
             }
         }
-        // post_copy->n_tags = reference->n_tags;
-        // post_copy->c_tags = reference->c_tags;
     }
     if (reference->votes != NULL && reference->n_votes > 0){
         for (size_t i = 0; i < reference->n_votes; ++i){
@@ -80,8 +78,6 @@ post_t* copy_post(const post_t* reference){
                 return NULL;
             }
         }
-        // post_copy->n_votes = reference->n_votes;
-        // post_copy->c_votes = reference->c_votes;
     }
     
     if (reference->comments != NULL && reference->n_comments > 0){
@@ -91,8 +87,6 @@ post_t* copy_post(const post_t* reference){
                 return NULL;
             }
         }
-        // post_copy->n_comments = reference->n_comments;
-        // post_copy->c_comments = reference->c_comments;
     }
     
     return post_copy;
@@ -142,7 +136,6 @@ static int resize_votes(vote_t*** old_votes, size_t* capacity){
 
     vote_t** resized_votes = realloc(*old_votes, sizeof(vote_t*) * (new_capacity * 2));
     if (resized_votes == NULL) return POST_RESIZE_ERROR;
-    // for (size_t i = 0; i < new_capacity*2; ++i) resized_votes[i] = NULL;
 
     *capacity = (new_capacity * 2);
     *old_votes = resized_votes;
@@ -157,7 +150,6 @@ static int resize_comments(comment_t*** old_comments, size_t* capacity){
 
     comment_t** resized_comments = realloc(*old_comments, sizeof(comment_t*) * (new_capacity * 2));
     if (resized_comments == NULL) return POST_RESIZE_ERROR;
-    // for (size_t i = 0; i < new_capacity*2; ++i) resized_comments[i] = NULL;
 
     *capacity = (new_capacity * 2);
     *old_comments = resized_comments;

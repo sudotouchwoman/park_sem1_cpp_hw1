@@ -30,16 +30,20 @@ blog_t* make_blog(FILE* fd_in){
         return NULL;
     }
     for (size_t i = 0; i < posts_total; ++i){
-        fprintf(stderr, "Checkpoint: before make_post()\n");
+        // fprintf(stderr, "Checkpoint: before make_post()\n");
         post_t* buf_post = make_post(fd_in);
         if (add_post(new_blog, buf_post) != 0){
             delete_post(buf_post);
             delete_blog(new_blog);
             return NULL;
         }
-        fprintf(stderr, "Checkpoint: before delete_post()\n");
+        // fprintf(stderr, "Checkpoint: before delete_post()\n");
         delete_post(buf_post);
-        fprintf(stderr, "Checkpoint: after delete_post()\n");
+        // fprintf(stderr, "Checkpoint: after delete_post()\n");
+        // turns out some errors were coming from that buf_post above
+        // how can realloc'ed memory (pointers) not be initialized?
+        // however, there are no more leaks at all which is pleasing
+        // needs further testing and deploying!
     }
     
     fprintf(stdout, "Succesfully read blog data from file\n");
@@ -143,7 +147,7 @@ int make_time_period(FILE* fd_in, size_t *years, size_t *months, size_t *days){
     if (months == NULL) return EMPTY_PTR_ERROR;
     if (days == NULL) return EMPTY_PTR_ERROR;
 
-    fprintf(stdout, "Enter time delta for search. Format is YYYY-MM-DD:\n");
+    fprintf(stdout, "Enter time delta for search. Format is \"Y;M;D;\" (Years, months, days):\n");
     if (fscanf(fd_in, "%lu;%lu;%lu;", years, months, days) != 3){
         fprintf(stdout, "Entered data is of invalid format, stopping work...\n");
         return FORMAT_ERROR;
