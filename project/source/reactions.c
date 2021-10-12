@@ -19,7 +19,7 @@ comment_t* create_comment(const char *date, const char *text){
     }
 
     comment_t* new_comment = (comment_t*)malloc(sizeof(comment_t));
-    if (new_text ==  NULL){
+    if (new_comment ==  NULL){
         free(new_date);
         free(new_text);
         return NULL;

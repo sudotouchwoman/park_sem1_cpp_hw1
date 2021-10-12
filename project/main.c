@@ -14,6 +14,7 @@ int main(int argc, char* argv[]){
 
     if (user_in == NULL){
         fprintf(stderr, "Failed to open user file!\n");
+        free_used_resources(user_in, blog_in, NULL, NULL);
         return EXIT_FAILURE;
     }
     if (blog_in == NULL){
