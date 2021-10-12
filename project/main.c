@@ -1,8 +1,8 @@
 #include "dataloader.h"
 #include "processing.h"
 
-#define USER_INPUT_FILE "../data/user_input.txt"
-#define USER_BLOG_FILE "../data/user_blog.txt"
+#define USER_INPUT_FILE "../data/user_input_ok.txt"
+#define USER_BLOG_FILE "../data/user_blog_ok.txt"
 
 int main(int argc, char* argv[]){
 

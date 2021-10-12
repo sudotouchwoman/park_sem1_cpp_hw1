@@ -2,6 +2,9 @@
 
 #include <string.h>
 
+// routines for comments and votes
+// are used to create, copy and safely delete these items
+
 comment_t* create_comment(const char *date, const char *text){
     if (date == NULL) return NULL;
     if (text == NULL) return NULL;

@@ -3,10 +3,16 @@
 #include <string.h>
 
 post_t* create_post(const char* title, const char* body, const char* post_date){
+    // create post struct instance and fill its main attributes 
+    // (title, body and post date). initially the capacity is zero and dual pointers are null
+
+    // check if anything passed was null
     if (title == NULL) return NULL;
     if (body == NULL) return NULL;
     if (post_date == NULL) return NULL;
 
+    // allocate memory for passed parameters
+    // abort if something wrong happens
     char* new_body = (char*)malloc(sizeof(char) * (strlen(body) + 1));
     if (new_body == NULL) return NULL;
 
@@ -31,6 +37,7 @@ post_t* create_post(const char* title, const char* body, const char* post_date){
         return NULL;
     }
 
+    // copy strings to allocated area and initialize size_t attributes
     strcpy(new_body, body);
     strcpy(new_title, title);
     strcpy(new_post_date, post_date);
@@ -55,6 +62,10 @@ post_t* create_post(const char* title, const char* body, const char* post_date){
 }
 
 post_t* copy_post(const post_t* reference){
+    // create new post and copy contents of the reference to it
+    // use copy_comment, copy_vote functions from reactions.h
+    // check if passed reference is null
+    // abort and return null if anything goes wrong
     if (reference == NULL) return NULL;
 
     post_t* post_copy = create_post(reference->title, reference->body, reference->post_date);
@@ -98,21 +109,35 @@ int delete_post(post_t* to_remove){
     if (to_remove->title != NULL) free(to_remove->title);
     if (to_remove->body != NULL) free(to_remove->body);
     if (to_remove->post_date != NULL) free(to_remove->post_date);
+    // as memory for comments, votes and tags can be realloced,
+    // we should not free pointers which are farther then n_tags/n_comments/n_votes
+    // this caused segfault and errors mentioned by valgrind
+    // after fix the errors disappeared, yay
+
+    // free comments
     if (to_remove->comments != NULL){
-        for (size_t i = 0; i < to_remove->c_comments; ++i) delete_comment(to_remove->comments[i]);
+        for (size_t i = 0; i < to_remove->n_comments; ++i) delete_comment(to_remove->comments[i]);
         free(to_remove->comments);
     }
+    // free tags
     if (to_remove->tags != NULL){
-        for (size_t i = 0; i < to_remove->c_tags; ++i) free(to_remove->tags[i]);
+        for (size_t i = 0; i < to_remove->n_tags; ++i)
+            if (to_remove->tags[i] != NULL) free(to_remove->tags[i]);
         free(to_remove->tags);
     }
+    // free votes
     if (to_remove->votes != NULL){
-        for (size_t i = 0; i < to_remove->c_votes; ++i) delete_vote(to_remove->votes[i]);
+        for (size_t i = 0; i < to_remove->n_votes; ++i) delete_vote(to_remove->votes[i]);
         free(to_remove->votes);
     }
+    // free the very passed pointer
     free(to_remove);
     return 0;
 }
+
+// static functions below are applied to resize pointers
+// the dual pointer is passed via triple pointer (haha)
+// double the capacity (this ensures we do optimal number of resizes)
 
 static int resize_tags(char*** old_tags, size_t* capacity){
     if (old_tags == NULL) return POST_RESIZE_ERROR;
@@ -156,6 +181,10 @@ static int resize_comments(comment_t*** old_comments, size_t* capacity){
     return 0;
 }
 
+// I found out that ordinary funcs above do not suite situation when
+// the capacity is zero
+// in this case we only thing we need to perform is malloc single item
+
 static int init_tag(post_t* where){
     if (where == NULL) return POST_APPEND_ERROR;
     char** new_tag = (char**)malloc(sizeof(char*));
@@ -182,6 +211,9 @@ static int init_vote(post_t* where){
     where->c_votes = 1;
     return 0;
 }
+
+// funcs below add corresponding items to the post
+// those do calls to init_item or resize_items
 
 int add_tag(post_t* where, const char* tag){
     if (tag == NULL) return POST_APPEND_ERROR;

@@ -11,11 +11,14 @@ static void flush_sscanf_buffer(FILE* fd){
 }
 
 blog_t* make_blog(FILE* fd_in){
+    // read blog data from the specified file
+    // the first line should contain number of posts
+    // call make_post() and abort if anything goes wrong in the process
     if (fd_in == NULL) return NULL;
-    fprintf(stdout, "Reads blog contents from specified file\n");
+    fprintf(stderr, "Reads blog contents from specified file\n");
     int posts_total = 0;
 
-    if (fscanf(fd_in, "%d", &posts_total) != 1){
+    if (fscanf(fd_in, "Total posts: %d", &posts_total) != 1){
         fprintf(stderr, "Invalid number of posts entered, stopping...\n");
         return NULL;
     }
@@ -23,6 +26,7 @@ blog_t* make_blog(FILE* fd_in){
         fprintf(stderr, "Invalid number of posts entered, stopping...\n");
         return NULL;
     }
+    // have to manually flush sscanf buffer to read strings containing spaces
     flush_sscanf_buffer(fd_in);
     blog_t* new_blog = create_blog();
     if (new_blog == NULL){
@@ -30,27 +34,26 @@ blog_t* make_blog(FILE* fd_in){
         return NULL;
     }
     for (size_t i = 0; i < posts_total; ++i){
-        // fprintf(stderr, "Checkpoint: before make_post()\n");
         post_t* buf_post = make_post(fd_in);
         if (add_post(new_blog, buf_post) != 0){
             delete_post(buf_post);
             delete_blog(new_blog);
+            fprintf(stderr, "Post data collection aborted\n");
             return NULL;
         }
-        // fprintf(stderr, "Checkpoint: before delete_post()\n");
         delete_post(buf_post);
-        // fprintf(stderr, "Checkpoint: after delete_post()\n");
         // turns out some errors were coming from that buf_post above
         // how can realloc'ed memory (pointers) not be initialized?
         // however, there are no more leaks at all which is pleasing
         // needs further testing and deploying!
     }
     
-    fprintf(stdout, "Succesfully read blog data from file\n");
+    fprintf(stderr, "Succesfully read blog data from file\n");
     return new_blog;
 }
 
 post_t* make_post(FILE* fd_in){
+    // parse contents from given file and create post
     if (fd_in == NULL) return NULL;
     char DATE_BUFFER[4+1+2+1+2+1];
     char TITLE_BUFFER[BUFFER_SIZE];
@@ -58,9 +61,9 @@ post_t* make_post(FILE* fd_in){
     char buffer_flusher = '\0';
     size_t buf_size = 0;
 
-    if (fscanf(fd_in, "%[^\n]s", TITLE_BUFFER) == 0) return NULL;
+    if (fscanf(fd_in, "Title: %[^\n]s", TITLE_BUFFER) == 0) return NULL;
     flush_sscanf_buffer(fd_in);
-    if (fscanf(fd_in, "%[^\n]s", DATE_BUFFER) == 0) return NULL;
+    if (fscanf(fd_in, "Created on %[^\n]s", DATE_BUFFER) == 0) return NULL;
     flush_sscanf_buffer(fd_in);
     if (fscanf(fd_in, "%[^\n]s", BODY_BUFFER) == 0) return NULL;
     flush_sscanf_buffer(fd_in);
@@ -74,7 +77,7 @@ post_t* make_post(FILE* fd_in){
     size_t n_votes = 0;
 
     // read hashtags
-    if (fscanf(fd_in, "%lu", &n_tags) != 1){
+    if (fscanf(fd_in, "Tags: %lu", &n_tags) != 1){
         delete_post(new_post);
         return NULL;
     }
@@ -92,7 +95,7 @@ post_t* make_post(FILE* fd_in){
     }
 
     // read comments
-    if (fscanf(fd_in, "%lu", &n_comments) != 1){
+    if (fscanf(fd_in, "Comments: %lu", &n_comments) != 1){
         delete_post(new_post);
         return NULL;
     }
@@ -118,7 +121,7 @@ post_t* make_post(FILE* fd_in){
     }
 
     // read votes
-    if (fscanf(fd_in, "%lu", &n_votes) != 1){
+    if (fscanf(fd_in, "Votes: %lu", &n_votes) != 1){
         delete_post(new_post);
         return NULL;
     }
@@ -147,15 +150,18 @@ int make_time_period(FILE* fd_in, size_t *years, size_t *months, size_t *days){
     if (months == NULL) return EMPTY_PTR_ERROR;
     if (days == NULL) return EMPTY_PTR_ERROR;
 
-    fprintf(stdout, "Enter time delta for search. Format is \"Y;M;D;\" (Years, months, days):\n");
+    fprintf(stderr, "Enter time delta for search. Format is \"Y;M;D;\" (Years, months, days):\n");
     if (fscanf(fd_in, "%lu;%lu;%lu;", years, months, days) != 3){
-        fprintf(stdout, "Entered data is of invalid format, stopping work...\n");
+        fprintf(stderr, "Entered data is of invalid format, stopping work...\n");
         return FORMAT_ERROR;
     }
+    fprintf(stderr, "Entered data: %lu years, %lu months, %lu days\n", *years, *months, *days);
     return 0;
 }
 
 void free_used_resources(FILE* user_in_fd, FILE* blog_in_fd, blog_t* main_blog, blog_t* most_upvoted_blog){
+    // close file descriptors
+    // and free all the allocated memory via delete_blog()
     if (user_in_fd != NULL) fclose(user_in_fd);
     if (blog_in_fd != NULL) fclose(blog_in_fd);
     delete_blog(main_blog);

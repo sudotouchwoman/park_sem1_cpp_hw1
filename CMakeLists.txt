@@ -26,7 +26,7 @@ add_library(${LIB_NAME} STATIC
 add_executable(${TARGET} ${MAIN})
 target_link_libraries(${TARGET} ${LIB_NAME})
 
-option(BUILD_TESTS "Build all tests." OFF)
+option(BUILD_TESTS "Build all tests." ON)
 if(BUILD_TESTS)
 
     add_subdirectory(googletest)

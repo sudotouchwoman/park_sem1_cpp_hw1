@@ -65,9 +65,10 @@ size_t find_max_reaction(const blog_t* target_blog, size_t time_period[3]){
     return max_reaction;
 }
 
-blog_t* select_most_hyped(blog_t* target_blog, size_t time_period[3]){
+blog_t* select_most_hyped(const blog_t* target_blog, size_t time_period[3]){
     if (target_blog == NULL) return NULL;
     if (target_blog->posts == NULL) return NULL;
+    if (time_period == NULL) return NULL;
 
     size_t max_reaction = find_max_reaction(target_blog, time_period);
     if (!max_reaction) return NULL;
@@ -96,12 +97,12 @@ int print_most_hyped(FILE* fd_out, const blog_t* blog_to_print){
 int print_post_contents(FILE* fd_out, const post_t* post_to_print){
     if (fd_out == NULL) return 1;
     if (post_to_print == NULL) return 1;
-    // if (post_to_print->title == NULL) return POST_NULL_ERROR;
-    // if (post_to_print->post_date == NULL) return POST_NULL_ERROR;
-    // if (post_to_print->body == NULL) return POST_NULL_ERROR;
-    // if (post_to_print->c_tags == 0) return POST_NULL_ERROR;
-    // if (post_to_print->c_comments == 0) return POST_NULL_ERROR;
-    // if (post_to_print->c_votes == 0) return POST_NULL_ERROR;
+    // if (post_to_print->title == NULL) return 1;
+    // if (post_to_print->post_date == NULL) return 1;
+    // if (post_to_print->body == NULL) return 1;
+    // if (post_to_print->c_tags == 0) return 1;
+    // if (post_to_print->c_comments == 0) return 1;
+    // if (post_to_print->c_votes == 0) return 1;
 
     fprintf(fd_out, "Post contents:\n");
     fprintf(fd_out, "%s (created on %s)\n", post_to_print->title, post_to_print->post_date);
