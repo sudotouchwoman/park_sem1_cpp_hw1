@@ -1,0 +1,81 @@
+language: cpp
+dist: bionic
+compiler: gcc
+
+# I have no idea how travis resolves addons and installs I just dont care the only thing it must do is run my damn tests
+# I borrowed this yaml from Artem and modified it to suit my needs
+
+branches:
+  only:
+    - develop
+  except:
+    - main
+
+# the install step will take care of deploying a newer cmake version
+install:
+  # first we create a directory for the CMake binaries
+  - DEPS_DIR="${TRAVIS_BUILD_DIR}/deps"
+  - mkdir ${DEPS_DIR} && cd ${DEPS_DIR}
+  # we use wget to fetch the cmake binaries
+  - travis_retry wget --no-check-certificate https://cmake.org/files/v3.16/cmake-3.16.1-Linux-x86_64.tar.gz
+  # extract the binaries; the output here is quite lengthy,
+  # so we swallow it to not clutter up the travis console
+  - tar -xvf cmake-3.16.1-Linux-x86_64.tar.gz > /dev/null
+  - mv cmake-3.16.1-Linux-x86_64 cmake-install
+  # add both the top-level directory and the bin directory from the archive
+  # to the system PATH. By adding it to the front of the path we hide the
+  # preinstalled CMake with our own.
+  - PATH=${DEPS_DIR}/cmake-install:${DEPS_DIR}/cmake-install/bin:$PATH
+  # don't forget to switch back to the main build directory once you are done
+  - cd ${TRAVIS_BUILD_DIR}
+
+
+before_script:
+  - chmod +x build.sh
+  - ./build.sh
+
+matrix:
+  include:
+    - os: linux
+      env:
+        - TEST="valgrind"
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - gcc-9
+            - g++-9
+            - valgrind
+      script:
+        - sh valgrind_test.sh
+
+    - os: linux
+      env:
+        - TEST="cppcheck"
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - gcc-9
+            - g++-9
+            - cppcheck
+      script:
+        - sh cppcheck_test.sh
+
+    - os: linux
+      env:
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - gcc-9
+            - g++-9
+            - valgrind
+      script:
+        - cd build
+        - ctest --verbose
+        - export CODECOV_TOKEN="9757ba56-aa1b-4e4b-b06f-838261b81dfc"
+        - bash <(curl -s https://codecov.io/bash)

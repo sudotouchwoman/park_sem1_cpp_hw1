@@ -90,7 +90,9 @@ blog_t* select_most_hyped(const blog_t* target_blog, size_t time_period[3]){
 int print_most_hyped(FILE* fd_out, const blog_t* blog_to_print){
     if (fd_out == NULL) return 1;
     if (blog_to_print == NULL) return 1;
+    fprintf(fd_out, "\nFound %lu matching post(s) for specified request\n", blog_to_print->n_posts);
     for (size_t i = 0; i < blog_to_print->n_posts; ++i) print_post_contents(fd_out, blog_to_print->posts[i]);
+    fprintf(fd_out, "\nProgram finished\n");
     return 0;
 }
 
@@ -104,8 +106,8 @@ int print_post_contents(FILE* fd_out, const post_t* post_to_print){
     // if (post_to_print->c_comments == 0) return 1;
     // if (post_to_print->c_votes == 0) return 1;
 
-    fprintf(fd_out, "Post contents:\n");
-    fprintf(fd_out, "%s (created on %s)\n", post_to_print->title, post_to_print->post_date);
+    fprintf(fd_out, "\nPost contents:\n");
+    fprintf(fd_out, "\n%s (created on %s)\n", post_to_print->title, post_to_print->post_date);
     fprintf(fd_out, "%s", post_to_print->body);
     fprintf(fd_out, "\nTags: ");
     for (size_t i = 0; i < post_to_print->n_tags; ++i) fprintf(fd_out, "%s ", post_to_print->tags[i]);
@@ -124,6 +126,6 @@ int print_post_contents(FILE* fd_out, const post_t* post_to_print){
             "%s\n",
             post_to_print->votes[i]->date_vote
             );
-    fprintf(fd_out, "End of post\n");
+    fprintf(fd_out, "\nEnd of post\n");
     return 0;
 }

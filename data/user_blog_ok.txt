@@ -1,4 +1,4 @@
-Total posts: 2
+Total posts: 4
 Title: welcome post
 Created on 2021-09-02
 users of out site are disappointed about this c programm
@@ -32,3 +32,34 @@ idk not yet
 last third comment to make sure everything works
 Votes: 1
 2021-09-04
+Title: Recently posted
+Created on 2021-11-01
+valgrind and cppcheck are configured and packed into shell scripts!
+Tags: 4
+#c
+#c++
+#valgrind
+#cppcheck
+Comments: 1
+2021-12-02
+ctest is actually very handy, automatically running all test suites!
+Votes: 5
+2021-11-02
+2021-11-15
+2021-11-15
+2021-12-18
+2021-12-29
+Title: travis ci
+Created on 2021-10-13
+Travis CI can be used for simultanious testing using matrix
+Tags: 2
+#travis
+#ci
+Comments: 2
+2021-10-14
+did you add coverage?
+2021-12-05
+WIP
+Votes: 2
+2021-10-20
+2021-10-22

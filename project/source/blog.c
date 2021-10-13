@@ -35,7 +35,7 @@ blog_t* copy_blog(const blog_t* reference){
 int delete_blog(blog_t* to_remove){
     if (to_remove == NULL) return BLOG_DELETE_ERROR;
     if (to_remove->posts != NULL){
-        for (size_t i = 0; i < to_remove->c_posts; ++i){
+        for (size_t i = 0; i < to_remove->n_posts; ++i){
             delete_post(to_remove->posts[i]);
         }
         free(to_remove->posts);

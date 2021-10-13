@@ -49,7 +49,7 @@ TEST(ProcessingTest, find_max_reaction){
     size_t month_period[] = {0, 1, 0};
     size_t two_months[] = {0, 2, 0};
     EXPECT_EQ(find_max_reaction(post_collection, month_period), 3);
-    EXPECT_EQ(find_max_reaction(post_collection, two_months), 5);
+    EXPECT_EQ(find_max_reaction(post_collection, two_months), 6);
 
     delete_blog(post_collection);
     fclose(fd);
