@@ -78,4 +78,4 @@ matrix:
         - cd build
         - ctest --verbose
         - export CODECOV_TOKEN="9757ba56-aa1b-4e4b-b06f-838261b81dfc"
-        - bash <(curl -s https://codecov.io/bash)
+        - bash <(curl -s https://codecov.io/bash) -Z
