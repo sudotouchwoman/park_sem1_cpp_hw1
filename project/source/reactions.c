@@ -25,8 +25,8 @@ comment_t* create_comment(const char *date, const char *text){
         return NULL;
     }
 
-    strcpy(new_date, date);
-    strcpy(new_text, text);
+    strncpy(new_date, date, strlen(date) + 1);
+    strncpy(new_text, text, strlen(text) + 1);
     new_comment->date_comment = new_date;
     new_comment->text_comment = new_text;
     
@@ -40,9 +40,10 @@ comment_t* copy_comment(const comment_t* reference){
 
 int delete_comment(comment_t* to_remove){
     if (to_remove == NULL) return EMPTY_COMMENT;
-    if (to_remove->date_comment != NULL) free(to_remove->date_comment);
-    if (to_remove->text_comment != NULL) free(to_remove->text_comment);
+    if (to_remove->date_comment != NULL) { free(to_remove->date_comment); to_remove->date_comment = NULL; }
+    if (to_remove->text_comment != NULL) { free(to_remove->text_comment); to_remove->text_comment = NULL; }
     free(to_remove);
+    to_remove = NULL;
     return EXIT_SUCCESS;
 }
 
@@ -58,7 +59,7 @@ vote_t* create_vote(const char *date){
         return NULL;
     }
 
-    strcpy(new_date, date);
+    strncpy(new_date, date, strlen(date) + 1);
     new_vote->date_vote = new_date;
 
     return new_vote;
@@ -71,7 +72,8 @@ vote_t* copy_vote(const vote_t* reference){
 
 int delete_vote(vote_t* to_remove){
     if (to_remove == NULL) return EMPTY_VOTE;
-    if (to_remove->date_vote != NULL) free(to_remove->date_vote);
+    if (to_remove->date_vote != NULL) { free(to_remove->date_vote); to_remove->date_vote = NULL; }
     free(to_remove);
+    to_remove = NULL;
     return EXIT_SUCCESS;
 }

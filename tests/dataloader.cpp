@@ -60,16 +60,14 @@ TEST(DataloaderTest, make_post){
 }
 
 TEST(DataloaderTest, make_time_period){
-    size_t years, months, days;
     FILE *fd = nullptr;
     fd = fopen(OK_TIME, "r");
-    EXPECT_EQ(make_time_period(fd, &years, &months, &days), 0);
-    EXPECT_EQ(make_time_period(fd, nullptr, nullptr, &days), EMPTY_PTR_ERROR);
-    EXPECT_EQ(make_time_period(fd, &years, nullptr, &days), EMPTY_PTR_ERROR);
-    EXPECT_EQ(make_time_period(nullptr, nullptr, nullptr, &days), OPEN_FILE_ERROR);
+    timedelta_t offset;
+    EXPECT_EQ(make_time_period(fd, &offset), 0);
+    EXPECT_EQ(make_time_period(fd, nullptr), EMPTY_PTR_ERROR);
     fclose(fd);
     fd = fopen(BAD_TIME, "r");
-    EXPECT_EQ(make_time_period(fd, &years, &months, &days), FORMAT_ERROR);
+    EXPECT_EQ(make_time_period(fd, &offset), FORMAT_ERROR);
     fclose(fd);
 }
 

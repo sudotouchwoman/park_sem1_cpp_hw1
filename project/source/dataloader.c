@@ -15,7 +15,7 @@ blog_t* make_blog(FILE* fd_in){
     // the first line should contain number of posts
     // call make_post() and abort if anything goes wrong in the process
     if (fd_in == NULL) return NULL;
-    fprintf(stderr, "Reads blog contents from specified file\n");
+    fprintf(stdout, "Reads blog contents from specified file\n");
     int posts_total = 0;
 
     if (fscanf(fd_in, "Total posts: %d", &posts_total) != 1){
@@ -28,12 +28,16 @@ blog_t* make_blog(FILE* fd_in){
     }
     // have to manually flush sscanf buffer to read strings containing spaces
     flush_sscanf_buffer(fd_in);
+    // create empty blog instance, without memory overhead
     blog_t* new_blog = create_blog();
     if (new_blog == NULL){
         fprintf(stderr, "Failed to allocate memory for the blog\n");
         return NULL;
     }
     for (size_t i = 0; i < posts_total; ++i){
+        // try to collect data and create posts (posts_total times)
+        // if add_post returned non-zero, buf_post might be NULL (i.e. reading it contents aboorted)
+        // thus, free all memory and return 
         post_t* buf_post = make_post(fd_in);
         if (add_post(new_blog, buf_post) != 0){
             delete_post(buf_post);
@@ -42,33 +46,37 @@ blog_t* make_blog(FILE* fd_in){
             return NULL;
         }
         delete_post(buf_post);
-        // turns out some errors were coming from that buf_post above
-        // how can realloc'ed memory (pointers) not be initialized?
-        // however, there are no more leaks at all which is pleasing
-        // needs further testing and deploying!
     }
     
-    fprintf(stderr, "Succesfully read blog data from file\n");
+    fprintf(stdout, "Succesfully read blog data from file\n");
     return new_blog;
 }
 
 post_t* make_post(FILE* fd_in){
     // parse contents from given file and create post
     if (fd_in == NULL) return NULL;
-    char DATE_BUFFER[4+1+2+1+2+1];
+    char DATE_BUFFER[ISO_DATE_SIZE];
     char TITLE_BUFFER[BUFFER_SIZE];
     char BODY_BUFFER[BUFFER_SIZE];
     char buffer_flusher = '\0';
     size_t buf_size = 0;
+    int scanf_status = 0;
 
-    if (fscanf(fd_in, "Title: %[^\n]s", TITLE_BUFFER) == 0) return NULL;
+    // read general info about post from specified file
+    // abort if anything goes wrong (EOF or no string)
+    scanf_status = fscanf(fd_in, "Title: %[^\n]s", TITLE_BUFFER);
+    if (scanf_status == 0 || scanf_status == EOF) return NULL;
     flush_sscanf_buffer(fd_in);
-    if (fscanf(fd_in, "Created on %[^\n]s", DATE_BUFFER) == 0) return NULL;
+    scanf_status = fscanf(fd_in, "Created on %[^\n]s", DATE_BUFFER);
+    if (scanf_status == 0 || scanf_status == EOF) return NULL;
     flush_sscanf_buffer(fd_in);
-    if (fscanf(fd_in, "%[^\n]s", BODY_BUFFER) == 0) return NULL;
+    scanf_status = fscanf(fd_in, "%[^\n]s", BODY_BUFFER);
+    if (scanf_status == 0 || scanf_status == EOF) return NULL;
     flush_sscanf_buffer(fd_in);
 
     // create new empty post
+    // post "constructor" takes 3 arguments to initialize: title, date and body
+    // there exist posts without tags, comments and votes, eh?
     post_t* new_post = create_post(TITLE_BUFFER, BODY_BUFFER, DATE_BUFFER);
     if (new_post == NULL) return NULL;
 
@@ -76,14 +84,16 @@ post_t* make_post(FILE* fd_in){
     size_t n_comments = 0;
     size_t n_votes = 0;
 
-    // read hashtags
+    // read hashtags and append to the post
+    // each hashtag takes a separate line
     if (fscanf(fd_in, "Tags: %lu", &n_tags) != 1){
         delete_post(new_post);
         return NULL;
     }
     flush_sscanf_buffer(fd_in);
     for (size_t i = 0; i < n_tags; ++i){
-        if (fscanf(fd_in, "%[^\n]s", BODY_BUFFER) == 0){
+        scanf_status = fscanf(fd_in, "%[^\n]s", BODY_BUFFER);
+        if (scanf_status == 0 || scanf_status == EOF){
             delete_post(new_post);
             return NULL;
         }
@@ -94,23 +104,28 @@ post_t* make_post(FILE* fd_in){
         }
     }
 
-    // read comments
+    // read comments and append to the post
+    // comments take 2 lines: 1 line of text and 1 line with iso-date
     if (fscanf(fd_in, "Comments: %lu", &n_comments) != 1){
         delete_post(new_post);
         return NULL;
     }
     flush_sscanf_buffer(fd_in);
     for (size_t i = 0; i < n_comments; ++i){
-        if (fscanf(fd_in, "%[^\n]s", DATE_BUFFER) == 0){
+        scanf_status = fscanf(fd_in, "%[^\n]s", DATE_BUFFER);
+        if (scanf_status == 0 || scanf_status == EOF){
             delete_post(new_post);
             return NULL;
         }
         flush_sscanf_buffer(fd_in);
-        if (fscanf(fd_in, "%[^\n]s", BODY_BUFFER) == 0){
+        
+        scanf_status = fscanf(fd_in, "%[^\n]s", BODY_BUFFER);
+        if (scanf_status == 0 || scanf_status == EOF){
             delete_post(new_post);
             return NULL;
         }
         flush_sscanf_buffer(fd_in);
+        
         comment_t* buf_comment = create_comment(DATE_BUFFER, BODY_BUFFER);
         if (add_comment(new_post, buf_comment) != 0){
             delete_comment(buf_comment);
@@ -120,14 +135,16 @@ post_t* make_post(FILE* fd_in){
         delete_comment(buf_comment);
     }
 
-    // read votes
+    // read votes and append to the post
+    // votes take 1 line with iso-date
     if (fscanf(fd_in, "Votes: %lu", &n_votes) != 1){
         delete_post(new_post);
         return NULL;
     }
     flush_sscanf_buffer(fd_in);
     for (size_t i = 0; i < n_votes; ++i){
-        if (fscanf(fd_in, "%[^\n]s", DATE_BUFFER) == 0){
+        scanf_status = fscanf(fd_in, "%[^\n]s", DATE_BUFFER);
+        if (scanf_status == 0 || scanf_status == EOF){
             delete_post(new_post);
             return NULL;
         }
@@ -144,18 +161,19 @@ post_t* make_post(FILE* fd_in){
     return new_post;
 }
 
-int make_time_period(FILE* fd_in, size_t *years, size_t *months, size_t *days){
+int make_time_period(FILE* fd_in, timedelta_t *offset){
+    // read time delta from specified file
+    // time delta is a sequence of numbers representing offset (days, months and years)
+    // e.g., to recreate given task, we should write 0;1;0; (0 years, 1 month, 0 days)
     if (fd_in == NULL) return OPEN_FILE_ERROR;
-    if (years == NULL) return EMPTY_PTR_ERROR;
-    if (months == NULL) return EMPTY_PTR_ERROR;
-    if (days == NULL) return EMPTY_PTR_ERROR;
+    if (offset == NULL) return EMPTY_PTR_ERROR;
 
-    fprintf(stderr, "Enter time delta for search. Format is \"Y;M;D;\" (Years, months, days):\n");
-    if (fscanf(fd_in, "%lu;%lu;%lu;", years, months, days) != 3){
-        fprintf(stderr, "Entered data is of invalid format, stopping work...\n");
+    fprintf(stdout, "Enter time delta for search. Format is \"Y;M;D;\" (Years, months, days):\n");
+    if (fscanf(fd_in, "%lu;%lu;%lu;", &offset->years, &offset->months, &offset->days) != 3){
+        fprintf(stdout, "Entered data is of invalid format, stopping work...\n");
         return FORMAT_ERROR;
     }
-    fprintf(stderr, "Entered data: %lu years, %lu months, %lu days\n", *years, *months, *days);
+    fprintf(stdout, "Collected data: %lu years, %lu months, %lu days\n", offset->years, offset->months, offset->days);
     return 0;
 }
 

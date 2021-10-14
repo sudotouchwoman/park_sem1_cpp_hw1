@@ -37,10 +37,13 @@ int delete_blog(blog_t* to_remove){
     if (to_remove->posts != NULL){
         for (size_t i = 0; i < to_remove->n_posts; ++i){
             delete_post(to_remove->posts[i]);
+            to_remove->posts[i] = NULL;
         }
         free(to_remove->posts);
+        to_remove->posts = NULL;
     }
     free(to_remove);
+    to_remove = NULL;
     return 0;
 }
 

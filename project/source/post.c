@@ -38,9 +38,9 @@ post_t* create_post(const char* title, const char* body, const char* post_date){
     }
 
     // copy strings to allocated area and initialize size_t attributes
-    strcpy(new_body, body);
-    strcpy(new_title, title);
-    strcpy(new_post_date, post_date);
+    strncpy(new_body, body, strlen(body) + 1);
+    strncpy(new_title, title, strlen(title) + 1);
+    strncpy(new_post_date, post_date, strlen(post_date) + 1);
 
     new_post->title = new_title;
     new_post->body = new_body;
@@ -106,9 +106,9 @@ post_t* copy_post(const post_t* reference){
 int delete_post(post_t* to_remove){
     if (to_remove == NULL) return POST_DELETE_ERROR;
 
-    if (to_remove->title != NULL) free(to_remove->title);
-    if (to_remove->body != NULL) free(to_remove->body);
-    if (to_remove->post_date != NULL) free(to_remove->post_date);
+    if (to_remove->title != NULL) { free(to_remove->title); to_remove->title = NULL; }
+    if (to_remove->body != NULL) { free(to_remove->body); to_remove->body = NULL; }
+    if (to_remove->post_date != NULL) { free(to_remove->post_date); to_remove->post_date = NULL; }
     // as memory for comments, votes and tags can be realloced,
     // we should not free pointers which are farther then n_tags/n_comments/n_votes
     // this caused segfault and errors mentioned by valgrind
@@ -116,22 +116,36 @@ int delete_post(post_t* to_remove){
 
     // free comments
     if (to_remove->comments != NULL){
-        for (size_t i = 0; i < to_remove->n_comments; ++i) delete_comment(to_remove->comments[i]);
+        for (size_t i = 0; i < to_remove->n_comments; ++i){
+            delete_comment(to_remove->comments[i]);
+            to_remove->comments[i] = NULL;
+        }
         free(to_remove->comments);
+        to_remove->comments = NULL;
     }
     // free tags
     if (to_remove->tags != NULL){
-        for (size_t i = 0; i < to_remove->n_tags; ++i)
-            if (to_remove->tags[i] != NULL) free(to_remove->tags[i]);
+        for (size_t i = 0; i < to_remove->n_tags; ++i){
+            if (to_remove->tags[i] != NULL){
+                free(to_remove->tags[i]);
+                to_remove->tags[i] = NULL;
+            }
+        }
         free(to_remove->tags);
+        to_remove->tags = NULL;
     }
     // free votes
     if (to_remove->votes != NULL){
-        for (size_t i = 0; i < to_remove->n_votes; ++i) delete_vote(to_remove->votes[i]);
+        for (size_t i = 0; i < to_remove->n_votes; ++i){
+            delete_vote(to_remove->votes[i]);
+            to_remove->votes[i] = NULL;
+        }
         free(to_remove->votes);
+        to_remove->votes = NULL;
     }
     // free the very passed pointer
     free(to_remove);
+    to_remove = NULL;
     return 0;
 }
 
@@ -141,42 +155,39 @@ int delete_post(post_t* to_remove){
 
 static int resize_tags(char*** old_tags, size_t* capacity){
     if (old_tags == NULL) return POST_RESIZE_ERROR;
+    if (*old_tags == NULL) return POST_RESIZE_ERROR;
     if (capacity == NULL) return POST_RESIZE_ERROR;
 
-    size_t new_capacity = *capacity ? *capacity : 1;
-
-    char** resized_tags = realloc(*old_tags, sizeof(char*) * (new_capacity * 2));
+    char** resized_tags = realloc(*old_tags, sizeof(char*) * (*capacity * 2));
     if (resized_tags == NULL) return POST_RESIZE_ERROR;
 
-    *capacity = (new_capacity * 2);
+    *capacity *= 2;
     *old_tags = resized_tags;
     return 0;
 }
 
 static int resize_votes(vote_t*** old_votes, size_t* capacity){
     if (old_votes == NULL) return POST_RESIZE_ERROR;
+    if (*old_votes == NULL) return POST_RESIZE_ERROR;
     if (capacity == NULL) return POST_RESIZE_ERROR;
 
-    size_t new_capacity = *capacity ? *capacity : 1;
-
-    vote_t** resized_votes = realloc(*old_votes, sizeof(vote_t*) * (new_capacity * 2));
+    vote_t** resized_votes = realloc(*old_votes, sizeof(vote_t*) * (*capacity * 2));
     if (resized_votes == NULL) return POST_RESIZE_ERROR;
 
-    *capacity = (new_capacity * 2);
+    *capacity *= 2;
     *old_votes = resized_votes;
     return 0;
 }
 
 static int resize_comments(comment_t*** old_comments, size_t* capacity){
     if (old_comments == NULL) return POST_RESIZE_ERROR;
+    if (*old_comments == NULL) return POST_RESIZE_ERROR;
     if (capacity == NULL) return POST_RESIZE_ERROR;
 
-    size_t new_capacity = *capacity ? *capacity : 1;
-
-    comment_t** resized_comments = realloc(*old_comments, sizeof(comment_t*) * (new_capacity * 2));
+    comment_t** resized_comments = realloc(*old_comments, sizeof(comment_t*) * (*capacity * 2));
     if (resized_comments == NULL) return POST_RESIZE_ERROR;
 
-    *capacity = (new_capacity * 2);
+    *capacity *= 2;
     *old_comments = resized_comments;
     return 0;
 }
@@ -222,7 +233,7 @@ int add_tag(post_t* where, const char* tag){
     char* new_tag = (char*)malloc(sizeof(char) * (strlen(tag) + 1));
     if (new_tag == NULL) return POST_APPEND_ERROR;
 
-    strcpy(new_tag, tag);
+    strncpy(new_tag, tag, strlen(tag) + 1);
     if (where->c_tags == 0){
         if (init_tag(where) != 0){
             free(new_tag);
