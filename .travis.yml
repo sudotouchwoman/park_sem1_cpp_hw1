@@ -31,8 +31,8 @@ install:
 
 
 before_script:
-  - chmod +x build.sh
-  - ./build.sh
+  - chmod +x scripts/build.sh
+  - ./scripts/build.sh
 
 matrix:
   include:
@@ -48,7 +48,7 @@ matrix:
             - g++-9
             - valgrind
       script:
-        - sh valgrind_test.sh
+        - sh scripts/valgrind_test.sh
 
     - os: linux
       env:
@@ -62,10 +62,11 @@ matrix:
             - g++-9
             - cppcheck
       script:
-        - sh cppcheck_test.sh
+        - sh scripts/cppcheck_test.sh
 
     - os: linux
       env:
+        - TEST="codecov"
       addons:
         apt:
           sources:
@@ -73,9 +74,11 @@ matrix:
           packages:
             - gcc-9
             - g++-9
+            - gcovr
             - valgrind
       script:
         - cd build
         - ctest --verbose
+        - make hw_1_14_coverage
         - export CODECOV_TOKEN="9757ba56-aa1b-4e4b-b06f-838261b81dfc"
         - bash <(curl -s https://codecov.io/bash) -Z

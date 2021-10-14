@@ -58,8 +58,6 @@ post_t* make_post(FILE* fd_in){
     char DATE_BUFFER[ISO_DATE_SIZE];
     char TITLE_BUFFER[BUFFER_SIZE];
     char BODY_BUFFER[BUFFER_SIZE];
-    char buffer_flusher = '\0';
-    size_t buf_size = 0;
     int scanf_status = 0;
 
     // read general info about post from specified file
