@@ -3,6 +3,12 @@
 
 #include "Matrix.h"
 
-int mirror_by_side_diagonal(matrix_t *);
+enum processing_errors{
+    PROC_OK = 0,
+    PROC_ERR_NULLPTR,
+    PROC_ERR
+};
+
+int mirror_by_side_diagonal(matrix_t *const mx);
 
 #endif // _PROCESSING_H

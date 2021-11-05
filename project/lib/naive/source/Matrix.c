@@ -21,13 +21,13 @@ matrix_t* create_matrix(const dims_t size){
 
 int delete_matrix(matrix_t *to_remove){
     if (to_remove == NULL){
-        return ERR_EMPTY_MATRIX;
+        return MX_ERR_EMPTY_MX;
     }
     if (to_remove->cells == NULL){
         free(to_remove);
-        return ERR_EMPTY_MATRIX;
+        return MX_ERR_EMPTY_MX;
     }
     free(to_remove->cells);
     free(to_remove);
-    return OK;
+    return MX_OK;
 }

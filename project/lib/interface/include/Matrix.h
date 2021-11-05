@@ -4,8 +4,9 @@
 #include <stdlib.h>
 
 enum matrix_errors{
-    OK = 0,
-    ERR_EMPTY_MATRIX
+    MX_OK = 0,
+    MX_ERR_EMPTY_MX,
+    MX_ERR
 };
 
 typedef struct{
@@ -19,9 +20,9 @@ typedef struct {
 } matrix_t;
 
 matrix_t* create_matrix(const dims_t);
-int mirror_matrix(matrix_t *);
+int mirror_matrix(matrix_t *const);
 int delete_matrix(matrix_t*);
-size_t index(const dims_t matrix_dims, const dims_t point){
+size_t idx(const dims_t matrix_dims, const dims_t point){
     return matrix_dims.COLS * point.ROWS + point.COLS;
 }
 

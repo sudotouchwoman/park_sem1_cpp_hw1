@@ -11,7 +11,7 @@ static int* init_cells(const dims_t size){
 
 static int free_cells(int* mapped, const dims_t size){
     if (mapped == NULL || mapped == MAP_FAILED){
-        return ERR_EMPTY_MATRIX;
+        return MX_ERR_EMPTY_MX;
     }
     const size_t area = size.ROWS * size.COLS;
     int status = munmap(mapped, area);
@@ -34,13 +34,13 @@ matrix_t* create_matrix(const dims_t size){
 
 int delete_matrix(matrix_t *to_remove){
     if (to_remove == NULL){
-        return ERR_EMPTY_MATRIX;
+        return MX_ERR_EMPTY_MX;
     }
     if (to_remove->cells == NULL){
         free(to_remove);
-        return ERR_EMPTY_MATRIX;
+        return MX_ERR_EMPTY_MX;
     }
     free_cells(to_remove->cells, to_remove->dims);
     free(to_remove);
-    return OK;
+    return MX_OK;
 }
