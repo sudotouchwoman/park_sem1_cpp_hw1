@@ -5,8 +5,18 @@ static int* init_cells(const dims_t size){
     return (int*)calloc(area, sizeof(int));
 }
 
+const size_t idx(const dims_t mx_dims, const dims_t point){
+    return mx_dims.COLS * point.ROWS + point.COLS;
+}
+
+const size_t idx_T(const dims_t mx_dims, const dims_t point){
+    const size_t new_col = mx_dims.ROWS - point.ROWS - 1;
+    const size_t new_row = mx_dims.COLS - point.COLS - 1;
+    return mx_dims.ROWS * new_row + new_col;
+}
+
 matrix_t* create_matrix(const dims_t size){
-    matrix_t *new_matrix = (matrix_t*)malloc(sizeof(matrix_t));
+    matrix_t *new_matrix = (matrix_t*)calloc(1, sizeof(matrix_t));
     if (new_matrix == NULL){
         return NULL;
     }

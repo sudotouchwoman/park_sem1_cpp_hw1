@@ -1,4 +1,4 @@
-set(SOURCES source/Matrix.c)
+set(SOURCES source/Matrix.c source/Processing.c source/Mirror.c)
 
 add_library(naive STATIC ${SOURCES})
 

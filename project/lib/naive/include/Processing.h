@@ -9,6 +9,5 @@ enum processing_errors{
     PROC_ERR
 };
 
-int mirror_by_side_diagonal(matrix_t *const mx);
 
 #endif // _PROCESSING_H

@@ -12,9 +12,6 @@ add_compile_options(-Wall -Werror -Wpedantic)
 set(PROJECT_FOLDER ${CMAKE_CURRENT_SOURCE_DIR}/project)
 # set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/scripts/cmake)
 
-#configure main.h (data file setting)
-# set(DATA_FILE ${CMAKE_CURRENT_SOURCE_DIR}/data/data.txt)
-# configure_file(${PROJECT_FOLDER}/include/main.h.in ${PROJECT_FOLDER}/include/main.h)
 
 option(CONCURRENT "link concurrent library")
 option(NAIVE "link consistent library")

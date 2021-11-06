@@ -20,10 +20,8 @@ typedef struct {
 } matrix_t;
 
 matrix_t* create_matrix(const dims_t);
-int mirror_matrix(matrix_t *const);
 int delete_matrix(matrix_t*);
-size_t idx(const dims_t matrix_dims, const dims_t point){
-    return matrix_dims.COLS * point.ROWS + point.COLS;
-}
+const size_t idx(const dims_t mx_dims, const dims_t point);
+const size_t idx_T(const dims_t mx_dims, const dims_t point);
 
 #endif // _MATRIX_H
