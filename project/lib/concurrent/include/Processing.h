@@ -2,6 +2,8 @@
 #define _PROCESSING_H
 
 #include <unistd.h>
+#include <sys/wait.h>
+#include <sys/sysinfo.h>
 #include <sys/mman.h>
 #include "Matrix.h"
 
@@ -14,6 +16,8 @@ enum processing_errors{
     PROC_BAD_FORK = -1
 };
 
+// imply that this implementation
+// uses shared memory
 typedef matrix_t shared_matrix_t;
 
 #endif // _PROCESSING_H

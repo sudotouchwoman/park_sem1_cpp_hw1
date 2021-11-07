@@ -9,5 +9,4 @@ enum processing_errors{
     PROC_ERR
 };
 
-
-#endif // _PROCESSING_H
+#endif  // _PROCESSING_H
