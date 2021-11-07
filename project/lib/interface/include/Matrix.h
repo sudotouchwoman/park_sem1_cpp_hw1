@@ -19,8 +19,11 @@ typedef struct {
     dims_t dims;
 } matrix_t;
 
+matrix_t* transpose_by_side_diagonal(matrix_t const *const mx);
+
 matrix_t* create_matrix(const dims_t);
 int delete_matrix(matrix_t*);
+
 const size_t idx(const dims_t mx_dims, const dims_t point);
 const size_t idx_T(const dims_t mx_dims, const dims_t point);
 

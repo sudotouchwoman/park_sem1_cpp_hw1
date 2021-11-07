@@ -1,5 +1,5 @@
-#ifndef _MIRROR_H
-#define _MIRROR_H
+#ifndef _MATRIX_IO_H
+#define _MATRIX_IO_H
 
 #include <stdio.h>
 #include "Matrix.h"
@@ -15,7 +15,6 @@ enum common_errors{
 
 matrix_t *init_matrix(FILE *const in);
 int pretty_print_matrix(FILE *const out, const matrix_t *const mx);
-matrix_t* transpose_by_side_diagonal(matrix_t const *const mx);
 int free_used_resources(FILE *in, FILE *out);
 
-#endif // _MIRROR_H
+#endif // _MATRIX_IO_H

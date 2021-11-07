@@ -1,4 +1,4 @@
-#include "Mirror.h"
+#include "MatrixIO.h"
 #include <string.h>
 
 static int init_dims(FILE *const in, dims_t *const dims){
@@ -29,7 +29,7 @@ matrix_t *init_matrix(FILE *const in){
             delete_matrix(mx);
             return NULL;
         }
-        fprintf(stderr, "Buffer contains: %s", row_buffer);
+        // fprintf(stderr, "Buffer contains: %s", row_buffer);
         // fprintf(stderr, "%s", row_buffer);
         // fprintf(stderr, "this was row %lu", y);
         char *row = row_buffer;
@@ -41,7 +41,7 @@ matrix_t *init_matrix(FILE *const in){
                 return NULL;
             }
             row += n;
-            fprintf(stderr, "read this: %d , index is %lu\n", mx->cells[idx(mx_dims, point)], idx(mx_dims, point));
+            // fprintf(stderr, "read this: %d , index is %lu\n", mx->cells[idx(mx_dims, point)], idx(mx_dims, point));
         }
     }
 
