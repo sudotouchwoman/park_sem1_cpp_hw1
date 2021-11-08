@@ -14,6 +14,7 @@ enum common_errors{
 };
 
 matrix_t *init_matrix(FILE *const in);
+matrix_t *init_matrix_fromarray(const int* const mx_array, const dims_t md);
 int pretty_print_matrix(FILE *const out, const matrix_t *const mx);
 int free_used_resources(FILE *in, FILE *out);
 

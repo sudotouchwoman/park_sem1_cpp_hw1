@@ -46,6 +46,21 @@ matrix_t *init_matrix(FILE *const in) {
     return mx;
 }
 
+matrix_t *init_matrix_fromarray(const int* const mx_array, const dims_t md) {
+    if (mx_array == NULL) return NULL;
+
+    matrix_t * mx = create_matrix(md);
+    if (mx == NULL) return NULL;
+
+    for (size_t y = 0; y < md.ROWS; ++y) {
+        for (size_t x = 0; x < md.COLS; ++x) {
+            const dims_t point = { .COLS = x, .ROWS = y};
+            mx->cells[idx(md, point)] = mx_array[idx(md, point)];
+        }
+    }
+    return mx;
+}
+
 int pretty_print_matrix(FILE *const out, const matrix_t *const mx) {
     if (out == NULL)
         return ERR_NULL_FD;
