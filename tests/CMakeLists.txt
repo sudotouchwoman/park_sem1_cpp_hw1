@@ -1,0 +1,39 @@
+add_executable(common_tests common.cpp)
+add_executable(matrix_tests matrix.cpp)
+add_executable(stress_tests stresstest.cpp)
+
+# link the specified library
+target_link_libraries(common_tests gtest)
+target_link_libraries(matrix_tests gtest)
+target_link_libraries(stress_tests gtest)
+
+target_include_directories(common_tests PUBLIC "${PROJECT_FOLDER}/lib/interface/include/")
+target_include_directories(matrix_tests PUBLIC "${PROJECT_FOLDER}/lib/interface/include/")
+target_include_directories(stress_tests PUBLIC "${PROJECT_FOLDER}/lib/interface/include/")
+
+target_include_directories(common_tests PUBLIC "${PROJECT_FOLDER}/lib/io/include/")
+target_include_directories(matrix_tests PUBLIC "${PROJECT_FOLDER}/lib/io/include/")
+target_include_directories(stress_tests PUBLIC "${PROJECT_FOLDER}/lib/io/include/")
+
+target_link_libraries(common_tests io)
+target_link_libraries(matrix_tests io)
+target_link_libraries(stress_tests io)
+
+if (CONCURRENT)
+    target_link_libraries(common_tests concurrent)
+    target_link_libraries(matrix_tests concurrent)
+    target_link_libraries(stress_tests concurrent)
+elseif (NAIVE)
+    target_link_libraries(common_tests naive)
+    target_link_libraries(matrix_tests naive)
+    target_link_libraries(stress_tests naive)
+else ()
+    message("No library connected to project, default: concurrent.")
+    target_link_libraries(common_tests concurrent)
+    target_link_libraries(matrix_tests concurrent)
+    target_link_libraries(stress_tests concurrent)
+endif ()
+
+add_test(NAME common COMMAND common_tests )
+add_test(NAME matrix COMMAND matrix_tests )
+add_test(NAME stress COMMAND stress_tests )

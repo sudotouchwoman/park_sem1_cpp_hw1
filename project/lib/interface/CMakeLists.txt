@@ -1,0 +1,2 @@
+add_library(matrix_interface INTERFACE)
+target_include_directories(matrix_interface INTERFACE include/)
