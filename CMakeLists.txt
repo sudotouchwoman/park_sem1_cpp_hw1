@@ -13,11 +13,11 @@ set(PROJECT_FOLDER ${CMAKE_CURRENT_SOURCE_DIR}/project)
 # set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/scripts/cmake)
 
 
-option(CONCURRENT "link concurrent library")
-option(NAIVE "link consistent library" YES)
+option(CONCURRENT "link concurrent library" ON)
+option(NAIVE "link consistent library" OFF)
 option(STRESS_TEST "Do stress test of libraries")
-option(TESTS "Configure unit tests" YES)
-option(ENABLE_COVERAGE "Build tests coverage statistic" YES)
+option(TESTS "Configure unit tests" ON)
+option(ENABLE_COVERAGE "Build tests coverage statistic" ON)
 
 # check now bc libraries should be built with corresponding flag to enable coverage
 if (ENABLE_COVERAGE)
@@ -32,9 +32,8 @@ add_subdirectory("${PROJECT_FOLDER}/lib/")
 if (STRESS_TEST OR TESTS)
     add_subdirectory(googletest)
     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
-    add_subdirectory(tests)
     enable_testing()
-    return()
+    add_subdirectory(tests)
 endif ()
 
 

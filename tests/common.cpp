@@ -27,8 +27,8 @@ const int* const MatrixFixture::mock_matrix(const size_t rows, const size_t cols
 
 class ProcessingFixture: public testing::Test {
     protected:
-        const char * task_file_name = "examples/test.txt";
-        const char * answer_file_name = "examples/answer.txt";
+        const char * task_file_name = "../../examples/test.txt";
+        const char * answer_file_name = "../../examples/answer.txt";
         FILE * in = nullptr;
         int * true_transposed = nullptr;
         void SetUp() override { loadTest(); loadAnswer(); }

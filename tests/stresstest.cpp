@@ -10,8 +10,8 @@ extern "C" {
 
 class StressTestFixture: public testing::Test {
     protected:
-        const char * task_file_name = "examples/test.txt";
-        const char * answer_file_name = "examples/answer.txt";
+        const char * task_file_name = "../../examples/test.txt";
+        const char * answer_file_name = "../../examples/answer.txt";
         FILE * in = nullptr;
         int * true_transposed = nullptr;
         void SetUp() override { loadTest(); loadAnswer(); }

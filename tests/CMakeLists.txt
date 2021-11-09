@@ -33,3 +33,7 @@ else ()
     target_link_libraries(matrix_tests concurrent)
     target_link_libraries(stress_tests concurrent)
 endif ()
+
+add_test(NAME common COMMAND common_tests )
+add_test(NAME matrix COMMAND matrix_tests )
+add_test(NAME stress COMMAND stress_tests )
