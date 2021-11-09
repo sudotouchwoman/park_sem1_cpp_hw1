@@ -4,8 +4,6 @@
 #include <stdio.h>
 #include "Matrix.h"
 
-#define ROW_BUFFER_SIZE 20000
-
 enum common_errors{
     OK = 0,
     ERR_NULL_FD,

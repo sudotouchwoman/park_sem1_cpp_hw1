@@ -1,6 +1,8 @@
 #include "MatrixIO.h"
 #include <string.h>
 
+#define ROW_BUFFER_SIZE 20000
+
 static int init_dims(FILE *const in, dims_t *const dims) {
     if (in == NULL) return ERR_NULL_FD;
     if (dims == NULL) return ERR_NULLPTR;
